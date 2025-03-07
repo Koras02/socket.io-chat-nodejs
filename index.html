@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.IO Chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const socket = io(); // io 객체 사용
+
+        // 서버로부터 저장된 메시지를 수신
+        socket.on("load messages", (messages) => {
+          messages.forEach((msg) => {
+            const item = document.createElement("li");
+            item.textContent = msg; // 메시지 목록에 추가
+            document.getElementById("messages").appendChild(item);
+          });
+        });
+
+        // 서버로부터 메시지를 수신
+        socket.on("chat message", (msg) => {
+          const item = document.createElement("li");
+          item.textContent = msg; // 메시지 목록에 추가
+          document.getElementById("messages").appendChild(item);
+        });
+
+        // 메시지 전송 함수
+        document.querySelector("form").onsubmit = function () {
+          const message = document.getElementById("message").value;
+          socket.emit("chat message", message); // 메시지 전송
+          document.getElementById("message").value = ""; // 입력 필드 초기화
+          return false; // 폼 제출 방지
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form autocomplete="off">
+      <input id="message" autocomplete="off" /><button>Send</button>
+    </form>
+  </body>
+</html>
